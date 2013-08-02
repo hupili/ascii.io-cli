@@ -44,15 +44,24 @@ class AsciiCast(object):
         if self.confirm_upload():
             return self._upload()
         else:
-            self._delete()
+            if self.confirm_delete():
+                self._delete()
 
     def confirm_upload(self):
         if self.always_yes:
             return True
 
-        sys.stdout.write("~ Do you want to upload it? [Y/n] ")
+        sys.stdout.write("~ Do you want to upload it? [y/N] ")
         answer = sys.stdin.readline().strip()
-        return answer == 'y' or answer == 'Y' or answer == ''
+        return not (answer == 'n' or answer == 'N' or answer == '')
+
+    def confirm_delete(self):
+        if self.always_yes:
+            return True
+
+        sys.stdout.write("~ Do you want to delete the tmp files? [y/N] ")
+        answer = sys.stdin.readline().strip()
+        return not (answer == 'n' or answer == 'N' or answer == '')
 
     def _record(self):
         os.makedirs(self.path)
@@ -335,6 +344,7 @@ class Uploader(object):
             return None
 
     def _remove_files(self):
+        #TODO: unify with AsciiCast._delete
         shutil.rmtree(self.path)
 
 
